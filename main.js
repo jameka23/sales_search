@@ -1,5 +1,4 @@
-const salesByWeek = [
-    {
+const salesByWeek = [{
         "vehicle": {
             "year": 2013,
             "model": "Tanex",
@@ -117,19 +116,61 @@ Randall has come back with a new job for you. Each week, he wants to see a repor
 */
 
 const salesContainer = document.querySelector("#sales-week");
-// 1. Display the first and last name of the sales agent.
+
+const searchDiv = document.createElement("div");
+const searchInput = document.createElement("input");
+searchInput.id = "searchInput";
+searchInput.placeholder = "Search an agent";
+
+const searchLabel = document.createElement("label");
+searchLabel.textContent = "Search: ";
+
+searchDiv.appendChild(searchLabel);
+searchDiv.appendChild(searchInput);
+salesContainer.appendChild(searchDiv);
+
+const agentSection = document.createElement("section");
+salesContainer.appendChild(agentSection);
+
 salesByWeek.forEach(saleObj => {
     const agentDiv = document.createElement("div");
     const agentHead = document.createElement("h1");
     agentHead.textContent = `${saleObj.sales_agent.first_name} ${saleObj.sales_agent.last_name}`;
     agentDiv.appendChild(agentHead);
-    for(const vehicleInfo of Object.entries(saleObj.vehicle)){
+
+    for (const vehicleInfo of Object.entries(saleObj.vehicle)) {
         const agentP = document.createElement("div");
         agentP.textContent = `${vehicleInfo[0]}: ${vehicleInfo[1]}`;
         agentDiv.appendChild(agentP);
     }
+
     const agentGross = document.createElement("h3");
     agentGross.textContent = `Profit: $${saleObj.gross_profit}`;
     agentDiv.appendChild(agentGross);
-    salesContainer.appendChild(agentDiv);
+    agentSection.appendChild(agentDiv);
+})
+
+const searchInputEvent = document.querySelector("#searchInput");
+console.log(searchInputEvent)
+searchInputEvent.addEventListener("keypress", event => {
+    if (event.charCode === 13) {
+        const searchTerm = event.target.value;
+        agentSection.innerHTML = '';
+        salesByWeek.forEach(saleObj => {
+            const saleArrayValues = Object.values(saleObj.sales_agent);
+            const matchSearch = saleArrayValues.filter(value => {
+                return value.toLowerCase().includes(searchTerm.toLowerCase());
+            })
+            console.log(matchSearch);
+            
+            if(matchSearch.length == 1){
+ 
+                agentSection.innerHTML += `
+                <h3>${saleObj.sales_agent.first_name} ${saleObj.sales_agent.last_name}</h3>
+                <div>${saleObj.sales_agent.email}</div>
+                <div>${saleObj.sales_agent.mobile}</div>
+                `
+            }
+        })
+    }
 })
